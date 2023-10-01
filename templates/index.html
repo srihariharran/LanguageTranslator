@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Language Translator</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <style>
+            .box
+            {
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+                padding:2%;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <div class="container p-5 mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6 box">
+                    <div class="col-md-12 text-center text-dark">
+                        <h4>Language Translator</h4>
+                    </div>
+                    <br/>
+                    <div class="col-md-12">
+                        <div>
+                            <div>
+                                <label class="form-label"><b>Enter the text to Translate (English):</b></label>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="text" class="form-control">
+                                    
+                                </textarea>
+                            </div>
+                        </div>
+                        <br/>
+                        <div>
+                            <div>
+                                <label class="form-label"><b>Language to Translate:</b></label>
+                            </div>
+                            <div class="form-group">
+                                <select id="languageCode" class="form-control">
+
+                                </select>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="text-center"> 
+                            <button id="translate" class="btn btn-primary">Translate</button>
+                        </div>
+                    </div>
+                    <div class="col-md-12" id="dis_result">
+                        <label><b>Translated Text:</b></label>
+                        <textarea class="form-control" id="result" readonly>
+
+                        </textarea>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $('#dis_result').hide();
+            $(document).ready(function()
+            {
+                $.ajax({
+                    url: "/get-language-code", 
+                    method:"POST",
+                    success: function(result){
+                        var langOption=''
+                        for(let i = 0; i < result.length; i++) {
+                            let obj = result[i];
+                            langOption=langOption+'<option value='+obj["Code"]+'>'+obj["Name"]+'</option>'
+                        }
+                        $('#languageCode').html(langOption);
+                    }
+                });
+            });
+
+            $('#translate').click(function(){
+                $('#dis_result').hide();
+                $.ajax({
+                    url: "/translate", 
+                    method:"POST",
+                    data:{
+                        text:$('#text').val(),
+                        code:$('#languageCode').val()
+                    }, 
+                    success: function(result){
+                        $('#dis_result').show();
+                        $('#result').html(result);
+                    }
+                });
+            });
+            
+        </script>
+    </body>
+</html>
